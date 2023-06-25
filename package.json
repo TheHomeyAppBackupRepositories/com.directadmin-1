@@ -1,0 +1,37 @@
+{
+  "name": "com.directadmin",
+  "version": "1.2.1",
+  "homepage": "https://github.com/edwinvdpol/com.directadmin#readme",
+  "license": "SEE LICENSE",
+  "author": {
+    "name": "Edwin van de Pol",
+    "email": "developer@edwinvandepol.nl"
+  },
+  "funding": [
+    {
+      "type": "individual",
+      "url": "https://www.paypal.me/edwinvdpol"
+    }
+  ],
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/edwinvdpol/com.directadmin.git"
+  },
+  "engines": {
+    "node": ">=12.16.1"
+  },
+  "scripts": {
+    "lint": "eslint --ext .js,.ts --ignore-path .gitignore ."
+  },
+  "dependencies": {
+    "abort-controller": "^3.0.0",
+    "homey-log": "^2.1.0",
+    "node-fetch": "^2.6.7",
+    "prettysize": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.3",
+    "eslint-config-athom": "^3.1.1"
+  }
+}
