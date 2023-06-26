@@ -1,6 +1,6 @@
 {
   "name": "com.directadmin",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "homepage": "https://github.com/edwinvdpol/com.directadmin#readme",
   "license": "SEE LICENSE",
   "author": {
@@ -10,7 +10,7 @@
   "funding": [
     {
       "type": "individual",
-      "url": "https://www.paypal.me/edwinvdpol"
+      "url": "https://paypal.me/edwinvdpol"
     }
   ],
   "main": "app.js",
@@ -31,7 +31,7 @@
     "prettysize": "^2.0.0"
   },
   "devDependencies": {
-    "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.3",
+    "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.4",
     "eslint-config-athom": "^3.1.1"
   }
 }
