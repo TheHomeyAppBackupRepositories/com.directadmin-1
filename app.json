@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "com.directadmin",
-  "version": "1.2.3",
+  "version": "1.3.0",
   "compatibility": ">=5.0.0",
   "platforms": [
     "local"
@@ -379,6 +379,11 @@
       "connectivity": [
         "lan"
       ],
+      "repair": [
+        {
+          "id": "credentials"
+        }
+      ],
       "name": {
         "en": "Domain",
         "nl": "Domein"
@@ -392,7 +397,7 @@
       ],
       "pair": [
         {
-          "id": "start"
+          "id": "credentials"
         },
         {
           "id": "list_devices",
@@ -406,117 +411,7 @@
           "template": "add_devices"
         }
       ],
-      "id": "domain",
-      "settings": [
-        {
-          "type": "group",
-          "label": {
-            "en": "Domain statistics",
-            "nl": "Domein statistieken"
-          },
-          "children": [
-            {
-              "id": "domain_bandwidth",
-              "type": "label",
-              "label": {
-                "en": "Bandwidth",
-                "nl": "Bandbreedte"
-              },
-              "value": "-"
-            },
-            {
-              "id": "domain_quota",
-              "type": "label",
-              "label": {
-                "en": "Disk usage",
-                "nl": "Schijfgebruik"
-              },
-              "value": "-"
-            }
-          ]
-        },
-        {
-          "type": "group",
-          "label": {
-            "en": "Email statistics",
-            "nl": "E-mail statistieken"
-          },
-          "children": [
-            {
-              "id": "email_accounts",
-              "type": "label",
-              "label": {
-                "en": "Accounts",
-                "nl": "Accounts"
-              },
-              "value": "-"
-            },
-            {
-              "id": "email_quota",
-              "type": "label",
-              "label": {
-                "en": "Disk usage",
-                "nl": "Schijfgebruik"
-              },
-              "value": "-"
-            }
-          ]
-        },
-        {
-          "type": "group",
-          "label": {
-            "en": "Server settings",
-            "nl": "Server instellingen"
-          },
-          "children": [
-            {
-              "id": "host",
-              "type": "text",
-              "label": {
-                "en": "URL"
-              },
-              "value": "-"
-            },
-            {
-              "id": "port",
-              "type": "number",
-              "label": {
-                "en": "Port",
-                "nl": "Poort"
-              },
-              "value": 2222,
-              "min": 1
-            }
-          ]
-        },
-        {
-          "type": "group",
-          "label": {
-            "en": "Login credentials",
-            "nl": "Inloggegevens"
-          },
-          "children": [
-            {
-              "id": "user",
-              "type": "text",
-              "label": {
-                "en": "Username",
-                "nl": "Gebruikersnaam"
-              },
-              "value": "-"
-            },
-            {
-              "id": "pass",
-              "type": "password",
-              "label": {
-                "en": "Password",
-                "nl": "Wachtwoord"
-              },
-              "value": "-"
-            }
-          ]
-        }
-      ]
+      "id": "domain"
     },
     {
       "class": "other",
@@ -529,6 +424,11 @@
       ],
       "connectivity": [
         "lan"
+      ],
+      "repair": [
+        {
+          "id": "credentials"
+        }
       ],
       "name": {
         "en": "Server"
@@ -545,7 +445,7 @@
       ],
       "pair": [
         {
-          "id": "start"
+          "id": "credentials"
         }
       ],
       "id": "server",
@@ -553,8 +453,8 @@
         {
           "type": "group",
           "label": {
-            "en": "License information",
-            "nl": "Licentie informatie"
+            "en": "License",
+            "nl": "Licentie"
           },
           "children": [
             {
@@ -590,60 +490,6 @@
               "label": {
                 "en": "Software version",
                 "nl": "Software versie"
-              },
-              "value": "-"
-            }
-          ]
-        },
-        {
-          "type": "group",
-          "label": {
-            "en": "Server settings",
-            "nl": "Server instellingen"
-          },
-          "children": [
-            {
-              "id": "host",
-              "type": "text",
-              "label": {
-                "en": "URL"
-              },
-              "value": "-"
-            },
-            {
-              "id": "port",
-              "type": "number",
-              "label": {
-                "en": "Port",
-                "nl": "Poort"
-              },
-              "value": 2222,
-              "min": 1
-            }
-          ]
-        },
-        {
-          "type": "group",
-          "label": {
-            "en": "Login credentials",
-            "nl": "Inloggegevens"
-          },
-          "children": [
-            {
-              "id": "user",
-              "type": "text",
-              "label": {
-                "en": "Username",
-                "nl": "Gebruikersnaam"
-              },
-              "value": "-"
-            },
-            {
-              "id": "pass",
-              "type": "password",
-              "label": {
-                "en": "Password",
-                "nl": "Wachtwoord"
               },
               "value": "-"
             }

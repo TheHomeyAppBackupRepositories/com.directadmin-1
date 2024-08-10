@@ -3,7 +3,7 @@
 const pretty = require('prettysize');
 const qs = require('querystring');
 const Device = require('../../lib/Device');
-const { filled } = require('../../lib/Utils');
+const { filled, blank } = require('../../lib/Utils');
 
 class DomainDevice extends Device {
 
@@ -15,15 +15,17 @@ class DomainDevice extends Device {
 
   // Handle sync data
   async handleSyncData(data) {
+    if (blank(data)) return;
+
     this.log('[Sync]', JSON.stringify(data));
 
     // Set domain data
-    if (filled(data.domain)) {
+    if ('domain' in data) {
       await this.handleDomainData(data.domain);
     }
 
     // Set email data
-    if (filled(data.email)) {
+    if ('email' in data) {
       await this.handleEmailData(data.email);
     }
 
@@ -33,61 +35,28 @@ class DomainDevice extends Device {
   // Handle domain data
   async handleDomainData(data) {
     // Check if domain is suspended
-    if (filled(data.suspended)) {
+    if ('suspended' in data) {
       await this.checkDomainIsSuspended(data.suspended);
     }
 
     // Check if domain is active
-    if (filled(data.active)) {
+    if ('active' in data) {
       await this.checkDomainIsActive(data.active);
     }
 
-    let newSettings = {};
-
     // Set device capabilities
-    if (filled(data.bandwidth)) {
+    if ('bandwidth' in data) {
       this.setCapabilityValue('bandwidth', parseFloat(data.bandwidth)).catch(this.error);
-
-      if (filled(data.bandwidth_limit)) {
-        newSettings.domain_bandwidth = this.getBandwidth(data.bandwidth, data.bandwidth_limit);
-      }
     }
 
-    if (filled(data.quota)) {
+    if ('quota' in data) {
       this.setCapabilityValue('quota', parseFloat(data.quota)).catch(this.error);
-
-      if (filled(data.quota_limit)) {
-        newSettings.domain_quota = this.getQuota(data.quota, data.quota_limit);
-      }
     }
-
-    // Set device settings
-    if (filled(newSettings)) {
-      this.setSettings(newSettings).catch(this.error);
-    }
-
-    newSettings = null;
   }
 
   // Handle email data
   async handleEmailData(data) {
-    let emailCount = 0;
-    let emailUsage = 0;
-
-    Object.keys(data).forEach((user) => {
-      const inbox = qs.parse(data[user]);
-
-      emailCount++;
-      emailUsage += parseFloat(inbox.usage);
-    });
-
-    this.setCapabilityValue('email_accounts', Number(emailCount)).catch(this.error);
-
-    // Set device settings
-    this.setSettings({
-      email_accounts: String(emailCount),
-      email_quota: this.getEmailQuota(emailUsage),
-    }).catch(this.error);
+    this.setCapabilityValue('email_accounts', Number(Object.keys(data).length)).catch(this.error);
   }
 
   /*

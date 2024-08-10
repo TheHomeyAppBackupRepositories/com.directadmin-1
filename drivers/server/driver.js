@@ -6,23 +6,23 @@ const Client = require('../../lib/Client');
 class ServerDriver extends Driver {
 
   // Pairing
-  onPair(session) {
+  async onPair(session) {
     this.log('Pairing servers');
 
-    session.setHandler('connect', async (data) => {
+    const onLogin = async (data) => {
       this.log('Connecting to server');
 
-      let settings;
+      let store;
       let license;
       let version;
       let client;
 
       try {
-        // Get connection settings
-        settings = this.getConnectSettings(data);
+        // Get store data
+        store = this.getStoreData(data);
 
         // Setup client
-        client = new Client(settings);
+        client = new Client(store);
 
         // Get license
         license = await client.call('LICENSE');
@@ -41,14 +41,77 @@ class ServerDriver extends Driver {
         // Emit create device event
         await session.emit('create', this.getDeviceData(data));
       } catch (err) {
-        throw new Error(this.homey.__(err.message));
+        this.error('[Pair]', err.toString());
+        throw new Error(this.homey.__(err.message) || err.message);
       } finally {
-        settings = null;
+        store = null;
         license = null;
         version = null;
         client = null;
       }
-    });
+    };
+
+    session.setHandler('login', onLogin);
+  }
+
+  /**
+   * Repairing
+   *
+   * @param session
+   * @param {ServerDevice|Device} device
+   */
+  async onRepair(session, device) {
+    this.log('[Repair] Session connected');
+
+    const onDisconnect = async () => {
+      this.log('[Repair] Session disconnected');
+    };
+
+    const onLogin = async (data) => {
+      this.log('[Repair] Connecting');
+
+      let store;
+      let license;
+      let version;
+      let client;
+
+      try {
+        // Get store data
+        store = this.getStoreData(data);
+
+        // Setup client
+        client = new Client(store);
+
+        // Get license
+        license = await client.call('LICENSE');
+
+        // Get version
+        version = Number(license.version.replace(/\./g, ''));
+
+        // Check if the version valid
+        if (version < 1580) {
+          throw new Error(this.homey.__('errors.version', { version: license.version }));
+        }
+
+        // Save store values
+        await device.setStoreValues(store);
+
+        // Close the pair session
+        await session.done();
+      } catch (err) {
+        this.error('[Repair]', err.toString());
+        throw new Error(this.homey.__(err.message) || err.message);
+      } finally {
+        store = null;
+        license = null;
+        version = null;
+        client = null;
+      }
+    };
+
+    session
+      .setHandler('login', onLogin)
+      .setHandler('disconnect', onDisconnect);
   }
 
 }

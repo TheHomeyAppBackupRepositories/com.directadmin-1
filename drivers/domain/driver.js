@@ -7,24 +7,24 @@ const Client = require('../../lib/Client');
 class DomainDriver extends Driver {
 
   // Pairing
-  onPair(session) {
+  async onPair(session) {
     this.log('Pairing domains');
 
     const foundDevices = [];
 
-    session.setHandler('connect', async (data) => {
+    const onLogin = async (data) => {
       this.log('Connecting to server');
 
-      let settings;
+      let store;
       let domains;
       let client;
 
       try {
-        // Get connection settings
-        settings = this.getConnectSettings(data);
+        // Get store data
+        store = this.getStoreData(data);
 
         // Setup client
-        client = new Client(settings);
+        client = new Client(store);
 
         // Get domains
         domains = await client.call('ADDITIONAL_DOMAINS');
@@ -41,17 +41,80 @@ class DomainDriver extends Driver {
           foundDevices.push(this.getDeviceData(data));
         });
       } catch (err) {
-        throw new Error(this.homey.__(err.message));
+        this.error('[Pair]', err.toString());
+        throw new Error(this.homey.__(err.message) || err.message);
       } finally {
-        settings = null;
+        store = null;
         domains = null;
         client = null;
       }
-    });
+    };
 
-    session.setHandler('list_devices', async () => {
-      return Promise.resolve(foundDevices);
-    });
+    const onListDevices = async () => foundDevices;
+
+    session
+      .setHandler('login', onLogin)
+      .setHandler('list_devices', onListDevices);
+  }
+
+  /**
+   * Repairing
+   *
+   * @param session
+   * @param {DomainDevice|Device} device
+   */
+  async onRepair(session, device) {
+    this.log('[Repair] Session connected');
+
+    const onDisconnect = async () => {
+      this.log('[Repair] Session disconnected');
+    };
+
+    const onLogin = async (data) => {
+      this.log('[Repair] Connecting');
+
+      let store;
+      let domains;
+      let client;
+
+      try {
+        // Get store data
+        store = this.getStoreData(data);
+
+        // Setup client
+        client = new Client(store);
+
+        // Get domains
+        domains = await client.call('ADDITIONAL_DOMAINS');
+
+        // No domains found
+        if (blank(domains)) {
+          throw new Error('errors.no_domains_found');
+        }
+
+        // Check if domain exists
+        if (blank(domains[device.getData().id])) {
+          throw new Error('errors.domain_not_found');
+        }
+
+        // Save store values
+        await device.setStoreValues(store);
+
+        // Close the pair session
+        await session.done();
+      } catch (err) {
+        this.error('[Repair]', err.toString());
+        throw new Error(this.homey.__(err.message) || err.message);
+      } finally {
+        store = null;
+        domains = null;
+        client = null;
+      }
+    };
+
+    session
+      .setHandler('login', onLogin)
+      .setHandler('disconnect', onDisconnect);
   }
 
 }
